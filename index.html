@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<title>تسجيل الحضور</title>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="header">
+        <h1>📋 تسجيل الحضور</h1>
+        <p class="subtitle">تخصص: تلقين الإعلام الآلي</p>
+    </div>
+
+    <label>📅 تاريخ التسجيل</label>
+    <input type="date" id="attendanceDate">
+
+    <div class="stats">
+        <div class="stat"><span id="presentCount">0</span><small>حضور</small></div>
+        <div class="stat"><span id="absentCount">0</span><small>غياب</small></div>
+        <div class="stat"><span id="attendanceRate">0%</span><small>النسبة</small></div>
+    </div>
+
+    <input type="text" id="nameInput" placeholder="اسم المتربص">
+    <button onclick="addTrainee()">➕ إضافة متربص</button>
+
+    <select id="traineeSelect"></select>
+
+    <button class="present" onclick="markAttendance('حاضر')">✔ حاضر</button>
+    <button class="absent" onclick="markAttendance('غائب')">✖ غائب</button>
+
+    <button onclick="editTrainee()">✏️ تعديل الاسم</button>
+    <button onclick="deleteTrainee()">🗑 حذف الاسم</button>
+
+    <button onclick="exportToCSV()">📤 تصدير CSV</button>
+
+    <ul id="history"></ul>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
