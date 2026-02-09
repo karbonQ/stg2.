@@ -12,6 +12,7 @@ const absentList = document.getElementById("absentList");
 let trainees = JSON.parse(localStorage.getItem("trainees")) || [];
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
+/* حفظ البيانات */
 function save() {
     localStorage.setItem("trainees", JSON.stringify(trainees));
     localStorage.setItem("records", JSON.stringify(records));
@@ -49,7 +50,6 @@ function markAttendance(status) {
     if (!date) return alert("اختر التاريخ");
 
     records.push({ name, status, date });
-
     save();
     renderHistory();
     updateStats();
@@ -76,7 +76,6 @@ function renderHistory() {
 /* تبديل الحالة */
 function toggleStatus(i) {
     records[i].status = records[i].status === "حاضر" ? "غائب" : "حاضر";
-
     save();
     renderHistory();
     updateStats();
@@ -150,6 +149,9 @@ function renderSummaryLists() {
     });
 }
 
+/* تحديث القوائم عند تغيير التاريخ */
+attendanceDate.addEventListener("change", renderSummaryLists);
+
 /* تصدير CSV */
 function exportToCSV() {
     if (records.length === 0) return alert("لا يوجد بيانات");
@@ -172,5 +174,3 @@ renderSelect();
 renderHistory();
 updateStats();
 renderSummaryLists();
-attendanceDate.addEventListener("change", renderSummaryLists);
-
