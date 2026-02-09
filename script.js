@@ -1,3 +1,14 @@
+// ربط العناصر بالـ DOM
+const nameInput = document.getElementById("nameInput");
+const traineeSelect = document.getElementById("traineeSelect");
+const history = document.getElementById("history");
+const attendanceDate = document.getElementById("attendanceDate");
+const presentCount = document.getElementById("presentCount");
+const absentCount = document.getElementById("absentCount");
+const attendanceRate = document.getElementById("attendanceRate");
+const presentList = document.getElementById("presentList");
+const absentList = document.getElementById("absentList");
+
 let trainees = JSON.parse(localStorage.getItem("trainees")) || [];
 let records = JSON.parse(localStorage.getItem("records")) || [];
 
@@ -6,6 +17,7 @@ function save() {
     localStorage.setItem("records", JSON.stringify(records));
 }
 
+/* إضافة متربص */
 function addTrainee() {
     const name = nameInput.value.trim();
     if (!name || trainees.includes(name)) return;
@@ -16,8 +28,10 @@ function addTrainee() {
     renderSelect();
 }
 
+/* عرض القائمة المنسدلة */
 function renderSelect() {
     traineeSelect.innerHTML = "";
+
     trainees.forEach(name => {
         const opt = document.createElement("option");
         opt.value = name;
@@ -26,6 +40,7 @@ function renderSelect() {
     });
 }
 
+/* تسجيل الحضور أو الغياب */
 function markAttendance(status) {
     const name = traineeSelect.value;
     const date = attendanceDate.value;
@@ -34,11 +49,14 @@ function markAttendance(status) {
     if (!date) return alert("اختر التاريخ");
 
     records.push({ name, status, date });
+
     save();
     renderHistory();
     updateStats();
+    renderSummaryLists();
 }
 
+/* عرض آخر السجلات */
 function renderHistory() {
     history.innerHTML = "";
 
@@ -55,13 +73,17 @@ function renderHistory() {
     });
 }
 
+/* تبديل الحالة */
 function toggleStatus(i) {
     records[i].status = records[i].status === "حاضر" ? "غائب" : "حاضر";
+
     save();
     renderHistory();
     updateStats();
+    renderSummaryLists();
 }
 
+/* الإحصائيات */
 function updateStats() {
     const present = records.filter(r => r.status === "حاضر").length;
     const absent = records.filter(r => r.status === "غائب").length;
@@ -72,6 +94,7 @@ function updateStats() {
     attendanceRate.textContent = total ? Math.round((present / total) * 100) + "%" : "0%";
 }
 
+/* حذف متربص */
 function deleteTrainee() {
     const name = traineeSelect.value;
     if (!name) return;
@@ -83,8 +106,10 @@ function deleteTrainee() {
     renderSelect();
     renderHistory();
     updateStats();
+    renderSummaryLists();
 }
 
+/* تعديل اسم متربص */
 function editTrainee() {
     const oldName = traineeSelect.value;
     if (!oldName) return;
@@ -98,12 +123,39 @@ function editTrainee() {
     save();
     renderSelect();
     renderHistory();
+    renderSummaryLists();
 }
 
+/* قوائم الحضور والغياب حسب التاريخ المختار */
+function renderSummaryLists() {
+    presentList.innerHTML = "";
+    absentList.innerHTML = "";
+
+    const selectedDate = attendanceDate.value;
+    if (!selectedDate) return;
+
+    const todayRecords = records.filter(r => r.date === selectedDate);
+
+    todayRecords.forEach(r => {
+        const li = document.createElement("li");
+        li.textContent = r.name;
+
+        if (r.status === "حاضر") {
+            li.className = "present";
+            presentList.appendChild(li);
+        } else {
+            li.className = "absent";
+            absentList.appendChild(li);
+        }
+    });
+}
+
+/* تصدير CSV */
 function exportToCSV() {
     if (records.length === 0) return alert("لا يوجد بيانات");
 
     let csv = "\uFEFFالاسم,الحالة,التاريخ\n";
+
     records.forEach(r => {
         csv += `${r.name},${r.status},${r.date}\n`;
     });
@@ -115,6 +167,10 @@ function exportToCSV() {
     link.click();
 }
 
+/* تشغيل عند فتح الصفحة */
 renderSelect();
 renderHistory();
 updateStats();
+renderSummaryLists();
+attendanceDate.addEventListener("change", renderSummaryLists);
+
